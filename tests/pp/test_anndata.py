@@ -142,7 +142,7 @@ def test_pseudobulk(
 
         b_mem_usage, pbdata = memory_usage(_run_psbulk_backed_data, retval=True, interval=0.0001)
         b_mem_usage = max(b_mem_usage) - min(b_mem_usage)
-        #assert b_mem_usage < l_mem_usage  # Too unstable
+        # assert b_mem_usage < l_mem_usage  # Too unstable
         msk = pbdata.X.sum(1) != 0
         pbdata = pbdata[msk, :].copy()
         assert pbdata.shape == pdata.shape
