@@ -4,7 +4,7 @@ requires = [ "hatchling" ]
 
 [project]
 name = "decoupler"
-version = "2.1.3"
+version = "2.1.4"
 description = "Python package to perform enrichment analysis from omics data."
 readme = "README.md"
 license = { file = "LICENSE" }
@@ -30,7 +30,7 @@ dependencies = [
   "marsilea",
   "numba",
   "requests",
-  "scipy<1.16", # https://github.com/statsmodels/statsmodels/issues/9584
+  "scipy",
   # for debug logging (referenced from the issue template)
   "session-info2",
   "tqdm",
