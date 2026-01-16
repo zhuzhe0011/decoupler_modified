@@ -23,11 +23,14 @@ def _download_chunks(
     headers = {"User-Agent": f"decoupler/{__version__} (https://github.com/scverse/decoupler)"}
     with requests.get(url, stream=True, headers=headers) as r:
         r.raise_for_status()
-        with tqdm(unit="B", unit_scale=True, desc="Progress", disable=not verbose) as pbar:
-            for chunk in r.iter_content(chunk_size=8192):
-                if chunk:
-                    chunks.append(chunk)
-                    pbar.update(len(chunk))
+        total = r.headers.get("Content-Length")
+        total = int(total) if total and total.isdigit() else None
+        with tqdm(total=total, unit="B", unit_scale=True, unit_divisor=1024, desc="Progress", disable=not verbose) as pbar:
+            for chunk in r.iter_content(chunk_size=1024 * 64):
+                if not chunk:
+                    continue
+                chunks.append(chunk)
+                pbar.update(len(chunk))
     # Read into bytes
     data = io.BytesIO(b"".join(chunks))
     return data
@@ -44,7 +47,7 @@ def _download(
     data = None
     for attempt in range(1, retries + 1):
         try:
-            data = _download_chunks(url, verbose=False)
+            data = _download_chunks(url, verbose=verbose)
             break
         except requests.exceptions.HTTPError as e:
             status_code = e.response.status_code if e.response is not None else None

@@ -68,7 +68,7 @@ def test_pseudobulk(
     empty,
     rng,
 ):
-    adata, _ = dc.ds.toy(nobs=10000, nvar=900, bval=2, seed=42, verbose=False)
+    adata, _ = dc.ds.toy(nobs=10000, nvar=2500, bval=2, seed=42, verbose=False)
     adata.layers["counts"] = adata.X.round()
     adata.obs["sample"] = adata.obs["sample"]
     adata.obs["dose"] = rng.choice(["low", "medium", "high"], size=adata.n_obs, replace=True)
@@ -105,7 +105,7 @@ def test_pseudobulk(
         )
         return pdata
 
-    l_mem_usage, pdata = memory_usage(_run_psbulk, retval=True, interval=0.001)
+    l_mem_usage, pdata = memory_usage(_run_psbulk, retval=True, interval=0.0001)
     l_mem_usage = max(l_mem_usage) - min(l_mem_usage)
     assert isinstance(pdata, ad.AnnData)
     assert pdata.shape[0] < adata.shape[0]
@@ -140,7 +140,7 @@ def test_pseudobulk(
             )
             return pbdata
 
-        b_mem_usage, pbdata = memory_usage(_run_psbulk_backed_data, retval=True, interval=0.001)
+        b_mem_usage, pbdata = memory_usage(_run_psbulk_backed_data, retval=True, interval=0.0001)
         b_mem_usage = max(b_mem_usage) - min(b_mem_usage)
         assert b_mem_usage < l_mem_usage
         msk = pbdata.X.sum(1) != 0

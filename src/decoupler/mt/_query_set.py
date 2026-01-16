@@ -4,7 +4,7 @@ from tqdm.auto import tqdm
 
 from decoupler._docs import docs
 from decoupler._log import _log
-from decoupler.mt._ora import _oddsr, _test1t
+from decoupler.mt._ora import _oddsr
 from decoupler.pp.net import prune
 
 
@@ -12,6 +12,7 @@ from decoupler.pp.net import prune
 def query_set(
     features: list,
     net: pd.DataFrame,
+    alternative: str = 'greater',
     n_bg: int | float | None = 20_000,
     ha_corr: int | float = 0.5,
     tmin: int | float = 5,
@@ -25,6 +26,8 @@ def query_set(
     features
         Set of features
     %(net)s
+    alternative
+        Defines the alternative hypothesis for fisher exact test. Check ``scipy.stats.fisher_exact``.
     %(n_bg)s
     %(ha_corr)s
     %(tmin)s
@@ -43,7 +46,7 @@ def query_set(
 
         ct = dc.op.collectri()
         ft = set(ct[ct["source"] == "SMAD4"]["target"])
-        dc.pp.query_set(features=fset, net=ct)
+        dc.mt.query_set(features=ft, net=ct)
     """
     # Validate
     assert hasattr(features, "__iter__") and not isinstance(features, str | bytes), (
@@ -75,7 +78,7 @@ def query_set(
         else:
             d = int(n_bg - a - b - c)
         od = _oddsr(a=a, b=b, c=c, d=d, ha_corr=ha_corr, log=True)
-        pv = _test1t(a=a, b=b, c=c, d=d)
+        _, pv = sts.fisher_exact([[a, b], [c, d]], alternative=alternative)
         df.append([source, od, pv])
     df = pd.DataFrame(df, columns=["source", "stat", "pval"])
     df["padj"] = sts.false_discovery_control(df["pval"], method="bh")

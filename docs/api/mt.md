@@ -31,3 +31,12 @@
     mt.decouple
     mt.consensus
 ```
+
+## Miscellaneous
+
+```{eval-rst}
+.. autosummary::
+    :toctree: generated
+
+    mt.query_set
+```
