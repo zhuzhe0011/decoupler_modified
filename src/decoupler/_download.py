@@ -25,7 +25,9 @@ def _download_chunks(
         r.raise_for_status()
         total = r.headers.get("Content-Length")
         total = int(total) if total and total.isdigit() else None
-        with tqdm(total=total, unit="B", unit_scale=True, unit_divisor=1024, desc="Progress", disable=not verbose) as pbar:
+        with tqdm(
+            total=total, unit="B", unit_scale=True, unit_divisor=1024, desc="Progress", disable=not verbose
+        ) as pbar:
             for chunk in r.iter_content(chunk_size=1024 * 64):
                 if not chunk:
                     continue

@@ -12,7 +12,7 @@ from decoupler.pp.net import prune
 def query_set(
     features: list,
     net: pd.DataFrame,
-    alternative: str = 'greater',
+    alternative: str = "greater",
     n_bg: int | float | None = 20_000,
     ha_corr: int | float = 0.5,
     tmin: int | float = 5,

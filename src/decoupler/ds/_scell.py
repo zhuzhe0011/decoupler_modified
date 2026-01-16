@@ -7,11 +7,10 @@ import anndata as ad
 import pandas as pd
 import requests
 import scipy.io as sio
-from tqdm.auto import tqdm
 
 from decoupler._docs import docs
-from decoupler._log import _log
 from decoupler._download import _download
+from decoupler._log import _log
 from decoupler.ds._utils import ensmbl_to_symbol
 
 
@@ -20,7 +19,7 @@ def _download_anndata(
     verbose: bool = False,
 ) -> ad.AnnData:
     warnings.filterwarnings("ignore", category=FutureWarning)
-    #with requests.get(url, stream=True) as response:
+    # with requests.get(url, stream=True) as response:
     #    response.raise_for_status()
     #    total_size = int(response.headers.get("content-length", 0))
     #    chunk_size = 8192
@@ -29,7 +28,7 @@ def _download_anndata(
     #        for chunk in response.iter_content(chunk_size=chunk_size):
     #            buffer.write(chunk)
     #            pbar.update(len(chunk))
-    #buffer.seek(0)
+    # buffer.seek(0)
     adata = _download(url=url, verbose=verbose)
     adata = ad.read_h5ad(adata)
     return adata
