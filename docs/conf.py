@@ -137,4 +137,5 @@ nitpick_ignore = [
     # If building the documentation fails because of a missing link that is outside your control,
     # you can add an exception to this list.
     #     ("py:class", "igraph.Graph"),
+    ("py:class", "pandas.core.frame.DataFrame"),
 ]
