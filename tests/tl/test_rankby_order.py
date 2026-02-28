@@ -6,7 +6,9 @@ import scipy.stats as sts
 import decoupler as dc
 
 
-@pytest.mark.parametrize("stat", ["dcor", "pearsonr", "spearmanr", "kendalltau", sts.pearsonr])
+@pytest.mark.parametrize(
+    "stat", ["dcor", "pearsonr", "spearmanr", "kendalltau", pytest.param(sts.pearsonr, id="sts.pearsonr")]
+)
 def test_rankby_order(
     tdata,
     stat,
