@@ -98,7 +98,7 @@ def test_func_gsea(
         permutation_num=times,
         permutation_type="gene_set",
         outdir=None,
-        min_size=0,
+        min_size=1,
         threads=4,
         seed=seed,
     ).res2d
