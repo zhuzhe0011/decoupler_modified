@@ -20,7 +20,7 @@ def df():
     return df
 
 
-@pytest.mark.parametrize("vcenter", [None, 3])
+@pytest.mark.parametrize("vcenter", [None, 0, 3])
 def test_dotplot(
     df,
     vcenter,
