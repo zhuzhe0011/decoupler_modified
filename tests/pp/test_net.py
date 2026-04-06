@@ -24,7 +24,7 @@ def test_validate_net(
     verbose,
     caplog,
 ):
-    with caplog.at_level(logging.WARNING):
+    with caplog.at_level(logging.WARNING, logger="decoupler"):
         vnet = dc.pp.net._validate_net(net=net, verbose=verbose)
     assert caplog.text == ""
     assert net.shape == vnet.shape
@@ -34,7 +34,7 @@ def test_validate_net(
 
     net.drop(columns=["weight"], inplace=True)
     assert "weight" not in net.columns
-    with caplog.at_level(logging.WARNING):
+    with caplog.at_level(logging.WARNING, logger="decoupler"):
         vnet = dc.pp.net._validate_net(net=net, verbose=verbose)
     if verbose:
         assert len(caplog.text) > 0
@@ -119,7 +119,7 @@ def test_adjmat(
     caplog,
 ):
     features = adata.var_names
-    with caplog.at_level(logging.INFO):
+    with caplog.at_level(logging.INFO, logger="decoupler"):
         sources, targets, adjmat = dc.pp.adjmat(features=features, net=net, verbose=verbose)
     adjmat = adjmat.ravel()
     non_zero_adjmat = adjmat[adjmat != 0.0]
@@ -143,7 +143,7 @@ def test_idxmat(
     caplog,
 ):
     features = adata.var_names
-    with caplog.at_level(logging.INFO):
+    with caplog.at_level(logging.INFO, logger="decoupler"):
         sources, cnct, starts, offsets = dc.pp.idxmat(features=features, net=net, verbose=verbose)
     if verbose:
         assert len(caplog.text) > 0

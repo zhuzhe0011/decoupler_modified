@@ -1,6 +1,10 @@
 import logging
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s | [%(levelname)s] %(message)s", datefmt="%Y-%m-%d %H:%M:%S")
+logger = logging.getLogger("decoupler")
+logger.setLevel(logging.INFO)
+_handler = logging.StreamHandler()
+_handler.setFormatter(logging.Formatter("%(asctime)s | [%(levelname)s] %(message)s", datefmt="%Y-%m-%d %H:%M:%S"))
+logger.addHandler(_handler)
 
 
 def _log(message: str, level: str = "info", verbose: bool = False) -> None:
@@ -19,6 +23,6 @@ def _log(message: str, level: str = "info", verbose: bool = False) -> None:
     level = level.lower()
     if verbose:
         if level == "warn":
-            logging.warning(message)
+            logger.warning(message)
         elif level == "info":
-            logging.info(message)
+            logger.info(message)

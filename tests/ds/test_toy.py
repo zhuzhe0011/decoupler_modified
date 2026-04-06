@@ -45,7 +45,7 @@ def test_toy(
     verbose,
     caplog,
 ):
-    with caplog.at_level(logging.INFO):
+    with caplog.at_level(logging.INFO, logger="decoupler"):
         adata, net = dc.ds.toy(nobs=nobs, nvar=nvar, bval=bval, pstime=pstime, seed=seed, verbose=verbose)
     if verbose:
         assert len(caplog.text) > 0
