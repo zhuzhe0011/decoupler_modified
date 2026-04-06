@@ -102,7 +102,7 @@ def dotplot(
     # Plot
     ns = (s_vals * scale * plt.rcParams["lines.markersize"]) ** 2
     bp.ax.grid(axis="x")
-    if vcenter:
+    if vcenter is not None:
         norm = TwoSlopeNorm(vmin=None, vcenter=vcenter, vmax=None)
     else:
         norm = None
