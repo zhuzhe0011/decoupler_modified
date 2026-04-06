@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning][].
 ### Added
 - `pl.volcano` now accepts a gene name (`str`) or list of gene names (`list[str]`) for the `top` parameter to annotate specific features on volcano plots
 
+### Changes
+- Refactored `ds.ensmbl_to_symbol` to reuse `_download` and fixed mirror fallback to actually switch between Ensembl mirrors
+
 ## 2.1.4
 
 ### Changes
