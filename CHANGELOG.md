@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning][].
 - Refactored `ds.ensmbl_to_symbol` to reuse `_download` and fixed mirror fallback to actually switch between Ensembl mirrors
 
 ### Bugfixes
+- Fixed `pl.dotplot` ignoring `vcenter=0` due to falsy check (#293)
 - Fixed `_log` setting the root logging level to INFO for all packages (#296)
 
 ## 2.1.4
