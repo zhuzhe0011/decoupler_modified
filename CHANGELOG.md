@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning][].
 
 ### Changes
 - Refactored `ds.ensmbl_to_symbol` to reuse `_download` and fixed mirror fallback to actually switch between Ensembl mirrors
+- Made `tqdm` progress bar compact in `_download`
 
 ### Bugfixes
 - Fixed `pl.dotplot` ignoring `vcenter=0` due to falsy check (#293)
