@@ -60,7 +60,7 @@ def ensmbl_to_symbol(
                 continue
             eids = df[1].to_dict()
             return [eids[g] if g in eids else None for g in genes]
-        except Exception:
+        except Exception:  # noqa: BLE001
             continue
     # Zenodo fallback for human and mouse
     if organism in ["hsapiens_gene_ensembl", "mmusculus_gene_ensembl"]:
