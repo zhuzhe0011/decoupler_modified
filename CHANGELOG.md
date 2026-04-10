@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning][].
 [keep a changelog]: https://keepachangelog.com/en/1.0.0/
 [semantic versioning]: https://semver.org/spec/v2.0.0.html
 
+## 2.1.6
+
+### Bugfixes
+- Fixed `op.translate` (and every `op.resource` call for non-human organisms) failing with HTTP 404 after HGNC dropped the `genenames/` subtree from the EBI FTP mirror; the HCOP fifteen-column files are now fetched from the new HGNC Google Cloud Storage bucket (#303)
+- Removed a redundant `pd.read_csv` call in `op.translate` that re-downloaded the HCOP file a second time and bypassed the retry logic in `_download`
+
 ## 2.1.5
 
 ### Added

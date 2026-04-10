@@ -130,7 +130,7 @@ def translate(
     predictions tool. Briefings in Bioinformatics, 22(6), p.bbab155.
 
     For more information, please visit the HCOP website: https://www.genenames.org/tools/hcop/,
-    or alternatively check the bulk download FTP links page: https://ftp.ebi.ac.uk/pub/databases/genenames/hcop/
+    or the HCOP help page for bulk download details: https://www.genenames.org/help/hcop/
 
     Parameters
     ----------
@@ -181,10 +181,11 @@ def translate(
     elif target_organism == "fruitfly":
         target_col = "fruit fly_symbol"
     # Process orthologs
-    url = f"https://ftp.ebi.ac.uk/pub/databases/genenames/hcop/human_{target_organism}_hcop_fifteen_column.txt.gz"
+    url = (
+        f"https://storage.googleapis.com/public-download-files/hcop/human_{target_organism}_hcop_fifteen_column.txt.gz"
+    )
     map_df = _download(url, verbose=verbose)
     map_df = _bytes_to_pandas(map_df, low_memory=False, compression="gzip", sep="\t")
-    map_df = pd.read_csv(url, sep="\t", low_memory=False)
     map_df["evidence"] = map_df["support"].apply(lambda x: len(x.split(",")))
     map_df = map_df[map_df["evidence"] >= min_evidence]
     map_df = map_df[["human_symbol", target_col]]
