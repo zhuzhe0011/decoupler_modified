@@ -50,7 +50,7 @@ def _tensor_scores(
 
 def _tensor_truth(obs: pd.DataFrame, srcs: np.ndarray) -> pd.DataFrame:
     # Explode nested perturbs and pivot into mat
-    grts = obs.explode("source").pivot(columns="source", values="type_p").notna().astype(float).fillna(0.0)
+    grts = obs.explode("source").pivot(columns="source", values="type_p").notna().astype(float).fillna(0.0).loc[obs.index]
     miss_srcs = srcs[~np.isin(srcs, grts.columns)]
     miss_srcs = pd.DataFrame(0, index=grts.index, columns=miss_srcs)
     grts = pd.concat([grts, miss_srcs], axis=1)
