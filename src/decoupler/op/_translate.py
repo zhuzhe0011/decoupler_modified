@@ -181,7 +181,9 @@ def translate(
     elif target_organism == "fruitfly":
         target_col = "fruit fly_symbol"
     # Process orthologs
-    url = f"https://storage.googleapis.com/public-download-files/hcop/human_{target_organism}_hcop_fifteen_column.txt.gz"
+    url = (
+        f"https://storage.googleapis.com/public-download-files/hcop/human_{target_organism}_hcop_fifteen_column.txt.gz"
+    )
     map_df = _download(url, verbose=verbose)
     map_df = _bytes_to_pandas(map_df, low_memory=False, compression="gzip", sep="\t")
     map_df["evidence"] = map_df["support"].apply(lambda x: len(x.split(",")))
