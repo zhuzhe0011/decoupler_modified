@@ -13,7 +13,7 @@ import decoupler as dc
         [["auc"], None, "expr", False, 0.05, 5, False],
         [["auc", "fscore"], "group", "expr", False, 0.05, 5, False],
         [["auc", "fscore", "qrank"], None, "source", False, 0.05, 2, False],
-        [["auc", "fscore", "qrank"], "group", "source", False, 0.05, 1, False],
+        [["auc", "fscore", "qrank"], "class", "source", False, 0.05, 1, False],
         [["auc", "fscore", "qrank"], "bm_group", "expr", True, 0.05, 5, False],
         [["auc", "fscore", "qrank"], "source", "expr", True, 0.05, 5, False],
     ],
