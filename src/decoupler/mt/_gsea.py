@@ -86,6 +86,7 @@ def _nesrank(
     set_msk: np.ndarray,
     dec: float,
     es: float,
+    pvalue: bool,
 ) -> tuple[float, float]:
     # Keep old set_msk upstream
     set_msk = set_msk.copy()
@@ -102,17 +103,18 @@ def _nesrank(
     pos_null_sum = pos_null_msk.sum()
     neg_null_sum = neg_null_msk.sum()
     if (es >= 0) and (pos_null_sum > 0):
-        pval = (null[pos_null_msk] >= es).sum() / pos_null_sum
+        pval = (null[pos_null_msk] >= es).sum() / pos_null_sum if pvalue else 1.0
         pos_null_mean = null[pos_null_msk].mean()
         nes = es / pos_null_mean
     elif (es < 0) and (neg_null_sum > 0):
-        pval = (null[neg_null_msk] <= es).sum() / neg_null_sum
+        pval = (null[neg_null_msk] <= es).sum() / neg_null_sum if pvalue else 1.0
         neg_null_mean = null[neg_null_msk].mean()
         nes = -es / neg_null_mean
     else:
         nes = 0.0
         pval = 1.0
     return nes, pval
+
 
 
 @nb.njit(parallel=True, cache=True)
@@ -122,6 +124,7 @@ def _stsgsea(
     starts: np.ndarray,
     offsets: np.ndarray,
     ridx: np.ndarray,
+    pvalue: bool,
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     # Sort features
     idx = np.argsort(-row)
@@ -132,7 +135,7 @@ def _stsgsea(
     rnks = np.arange(nvar)
     es = np.zeros(nsrc)
     nes = np.zeros(nsrc)
-    pv = np.ones(nsrc)
+    pv = np.ones(nsrc) 
     for j in nb.prange(nsrc):
         # Extract fset
         fset = _getset(cnct, starts, offsets, j)
@@ -144,8 +147,8 @@ def _stsgsea(
         set_msk = set_msk[idx]
         # Compute es per feature
         es[j], _, _ = _esrank(row=row, rnks=rnks, set_msk=set_msk, dec=dec)
-        nes[j], pv[j] = _nesrank(ridx=ridx, row=row, rnks=rnks, set_msk=set_msk, dec=dec, es=es[j])
-    return es, nes, pv
+        nes[j], pv[j] = _nesrank(ridx=ridx, row=row, rnks=rnks, set_msk=set_msk, dec=dec, es=es[j],pvalue=pvalue)
+    return es, nes, pv  
 
 
 @docs.dedent
@@ -157,7 +160,8 @@ def _func_gsea(
     times: int | float = 1000,
     seed: int | float = 42,
     verbose: bool = False,
-) -> tuple[np.ndarray, np.ndarray]:
+    pvalue: bool = True,
+) -> tuple[np.ndarray, np.ndarray | None]:
     r"""
     Gene Set Enrichment Analysis (GSEA) :cite:`gsea`.
 
@@ -249,7 +253,7 @@ def _func_gsea(
         ridx = _ridx(times=times, nvar=nvar, seed=None)
     es = np.zeros(shape=(nobs, nsrc))
     nes = np.zeros(shape=(nobs, nsrc))
-    pv = np.zeros(shape=(nobs, nsrc))
+    pv = np.ones(shape=(nobs, nsrc))
     for i in tqdm(range(nobs), disable=not verbose):
         if isinstance(mat, sps.csr_matrix):
             row = mat[i].toarray()[0]
@@ -261,9 +265,12 @@ def _func_gsea(
             starts=starts,
             offsets=offsets,
             ridx=ridx,
+            pvalue=pvalue,
         )
     if times > 1:
         es = nes
+    if not pvalue:
+        pv = None
     return es, pv
 
 

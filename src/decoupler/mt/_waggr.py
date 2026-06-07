@@ -103,13 +103,14 @@ def _perm(
     mat: np.ndarray,
     adj: np.ndarray,
     idx: np.ndarray,
+    pvalue: bool = True,
 ):
     # Init
     nobs, nvar = mat.shape
     nvar, nsrc = adj.shape
     times, nvar = idx.shape
     null_dst = np.zeros((nobs, nsrc, times))
-    pvals = np.zeros((nobs, nsrc))
+    pvals = np.ones((nobs, nsrc))
     # Permute
     for i in nb.prange(times):
         null_dst[:, :, i] = fun(mat[:, idx[i]], adj)
@@ -129,11 +130,14 @@ def _perm(
                     n = 0.0
             nes[i, j] = n
     # Compute empirical p-value
-    pvals = np.where(pvals == 0.0, 1.0, pvals)
-    pvals = np.where(pvals == times, times - 1, pvals)
-    pvals = pvals / times
-    pvals = np.where(pvals >= 0.5, 1 - (pvals), pvals)
-    pvals = pvals * 2
+    if pvalue:
+        pvals = np.where(pvals == 0.0, 1.0, pvals)
+        pvals = np.where(pvals == times, times - 1, pvals)
+        pvals = pvals / times
+        pvals = np.where(pvals >= 0.5, 1 - (pvals), pvals)
+        pvals = pvals * 2
+    else:
+        pvals = None
     return nes, pvals
 
 
@@ -145,7 +149,8 @@ def _func_waggr(
     times: int | float = 1000,
     seed: int | float = 42,
     verbose: bool = False,
-) -> tuple[np.ndarray, np.ndarray]:
+    pvalue: bool = True,
+) -> tuple[np.ndarray, np.ndarray | None]:
     r"""
     Weighted Aggregate (WAGGR) :cite:`decoupler`.
 
@@ -237,7 +242,7 @@ def _func_waggr(
         m = f"waggr - comparing estimates against {times} random permutations"
         _log(m, level="info", verbose=verbose)
         idx = _ridx(times=times, nvar=nvar, seed=seed)
-        es, pv = _perm(fun=vfun, es=es, mat=mat, adj=adj, idx=idx)
+        es, pv = _perm(fun=vfun, es=es, mat=mat, adj=adj, idx=idx,pvalue=pvalue)
     else:
         pv = np.ones(es.shape)
     return es, pv

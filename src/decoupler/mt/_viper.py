@@ -174,7 +174,8 @@ def _func_viper(
     n_targets: int = 10,
     penalty: int | float = 20,
     verbose: bool = False,
-) -> tuple[np.ndarray, np.ndarray]:
+    pvalue: bool = True,
+) -> tuple[np.ndarray, np.ndarray | None]:
     r"""
     Virtual Inference of Protein-activity by Enriched Regulon analysis (VIPER) :cite:`viper`.
 
@@ -317,8 +318,11 @@ def _func_viper(
             tmp = _aREA(ss_i.reshape(1, -1), sub_net, wts=wts)[0]
             nes[i, idxs] = tmp
     # Get pvalues
-    pvals = 2 * sts.norm.sf(np.abs(nes))
-    return nes, pvals
+    if pvalue:
+        pv = 2 * sts.norm.sf(np.abs(nes))
+    else:
+        pv = None
+    return nes, pv
 
 
 _viper = MethodMeta(

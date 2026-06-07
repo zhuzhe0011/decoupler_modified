@@ -298,6 +298,7 @@ def _func_gsva(
     absrnk: bool = False,
     tau: int | float = 1,
     verbose: bool = False,
+    pvalue: bool = False,
 ) -> tuple[np.ndarray, None]:
     r"""
     Gene Set Variation Analysis (GSVA) :cite:`gsva`.

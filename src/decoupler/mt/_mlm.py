@@ -38,7 +38,8 @@ def _func_mlm(
     adj: np.ndarray,
     tval: bool = True,
     verbose: bool = False,
-) -> tuple[np.ndarray, np.ndarray]:
+    pvalue: bool = True,
+) -> tuple[np.ndarray, np.ndarray | None]:
     r"""
     Multivariate Linear Model (MLM) :cite:`decoupler`.
 
@@ -115,7 +116,10 @@ def _func_mlm(
     # Compute tval
     coef, t = _fit(adj, mat.T, inv, df)
     # Compute pval
-    pv = 2 * (1 - sts.t.cdf(x=np.abs(t), df=df))
+    if pvalue:
+        pv = 2 * (1 - sts.t.cdf(x=np.abs(t), df=df))
+    else:
+        pv = None
     # Return coef or tval
     if tval:
         es = t

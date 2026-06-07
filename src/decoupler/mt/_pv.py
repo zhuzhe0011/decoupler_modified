@@ -54,6 +54,10 @@ def _fdr_bh_parallel(ps, m):
 def _fdr_bh_axis1_numba(ps):
     """Benjamini–Hochberg adjusted p-values along axis=1 (rows)."""
     ps = np.asarray(ps, dtype=np.float64)
+    mask = (ps >= 0) & (ps <= 1)
+    ps2 = np.ones(shape=ps.shape, dtype=np.float64)
+    ps2[mask] = ps[mask]
+    ps = ps2
     if ps.ndim != 2:
         raise ValueError("ps must be 2D (n_rows, n_tests) for axis=1.")
     if not np.issubdtype(ps.dtype, np.number):

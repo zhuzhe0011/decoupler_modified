@@ -9,6 +9,7 @@ from decoupler.mt._ulm import ulm
 from decoupler.mt._viper import viper
 from decoupler.mt._waggr import waggr
 from decoupler.mt._zscore import zscore
+from decoupler.mt._ucell import ucell
 
 _methods = [
     aucell,
@@ -22,4 +23,5 @@ _methods = [
     viper,
     waggr,
     zscore,
+    ucell
 ]

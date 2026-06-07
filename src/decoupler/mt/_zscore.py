@@ -12,7 +12,8 @@ def _func_zscore(
     adj: np.ndarray,
     flavor: str = "RoKAI",
     verbose: bool = False,
-) -> tuple[np.ndarray, np.ndarray]:
+    pvalue: bool = True,
+) -> tuple[np.ndarray, np.ndarray | None]:
     r"""
     Z-score (ZSCORE) :cite:`zscore`.
 
@@ -79,7 +80,10 @@ def _func_zscore(
     n = np.sqrt(np.count_nonzero(adj, axis=0))
     mean = mat.dot(adj) / np.sum(np.abs(adj), axis=0)
     es = ((mean - mean_all.reshape(-1, 1)) * n) / stds.reshape(-1, 1)
-    pv = 2 * sts.norm.sf(np.abs(es))
+    if pvalue:
+        pv = 2 * sts.norm.sf(np.abs(es))
+    else:
+        pv = None
     return es, pv
 
 

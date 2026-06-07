@@ -17,9 +17,9 @@ def _return(
     name: str,
     data: DataType,
     es: pd.DataFrame,
-    pv: pd.DataFrame,
+    pv: pd.DataFrame | None,
     verbose: bool = False,
-) -> tuple[pd.DataFrame, pd.DataFrame] | AnnData | None:
+) -> tuple[pd.DataFrame, pd.DataFrame | None] | AnnData | None:
     if isinstance(data, AnnData):
         if data.obs_names.size != es.index.size:
             m = "Provided AnnData contains empty observations, returning repaired object"
@@ -51,8 +51,9 @@ def _run(
     empty: bool = True,
     bsize: int | float = 250_000,
     verbose: bool = False,
+    pvalue: bool = True,
     **kwargs,
-) -> tuple[pd.DataFrame, pd.DataFrame] | AnnData | None:
+) -> tuple[pd.DataFrame, pd.DataFrame | None] | AnnData | None:
     _log(f"{name} - Running {name}", level="info", verbose=verbose)
     # Process data
     mat, obs, var = extract(data, layer=layer, raw=raw, empty=empty, shuffle=True, verbose=verbose, bsize=bsize)
@@ -81,13 +82,13 @@ def _run(
                     if sps.issparse(bmat):
                         bmat = bmat.toarray()
                     bmat = bmat[:, msk_col]
-                bes, bpv = func(bmat, adjm, verbose=batch_verbose, **kwargs)
+                bes, bpv = func(bmat, adjm, verbose=batch_verbose, **kwargs, pvalue=pvalue)
                 es.append(bes)
                 pv.append(bpv)
             es = np.vstack(es)
             es = pd.DataFrame(es, index=obs, columns=sources)
         else:
-            es, pv = func(mat, adjm, verbose=verbose, **kwargs)
+            es, pv = func(mat, adjm, verbose=verbose, **kwargs, pvalue=pvalue)
             es = pd.DataFrame(es, index=obs, columns=sources)
     else:
         sources, cnct, starts, offsets = idxmat(features=var, net=net, verbose=verbose)
@@ -102,15 +103,15 @@ def _run(
                 srt, end = i * bsize, i * bsize + bsize
                 bmat, msk_col = mat
                 bmat = bmat[srt:end, msk_col]
-                bes, bpv = func(bmat, cnct, starts, offsets, verbose=batch_verbose, **kwargs)
+                bes, bpv = func(bmat, cnct, starts, offsets, verbose=batch_verbose, **kwargs, pvalue=pvalue)
                 es.append(bes)
                 pv.append(bpv)
             es = np.vstack(es)
         else:
-            es, pv = func(mat, cnct, starts, offsets, verbose=verbose, **kwargs)
+            es, pv = func(mat, cnct, starts, offsets, verbose=verbose, **kwargs, pvalue=pvalue)
         es = pd.DataFrame(es, index=obs, columns=sources)
     # Handle pvals and FDR correction
-    if test:
+    if test and pvalue:
         pv = np.vstack(pv)
         pv = pd.DataFrame(pv, index=obs, columns=sources)
         if name != "mlm":

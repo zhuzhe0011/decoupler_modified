@@ -75,6 +75,7 @@ class Method(MethodMeta):
         empty: bool = True,
         bsize: int | float = 250_000,
         verbose: bool = False,
+        pvalue: bool = True, 
         **kwargs,
     ):
         return _run(
@@ -89,6 +90,7 @@ class Method(MethodMeta):
             empty=empty,
             bsize=bsize,
             verbose=verbose,
+            pvalue=pvalue,
             **kwargs,
         )
 

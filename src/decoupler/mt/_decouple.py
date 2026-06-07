@@ -13,6 +13,7 @@ def decouple(
     methods: str | list = "all",
     args: dict | None = None,
     cons: bool = False,
+    pvalue: bool = True,
     **kwargs,
 ) -> dict | None:
     """
@@ -73,7 +74,7 @@ def decouple(
     for name in methods_set:
         mth = _mdict[name]
         arg = args.setdefault(name, {})
-        res = mth(data=data, net=net, **arg, **kwargs)
+        res = mth(data=data, net=net, pvalue=pvalue, **arg, **kwargs)
         if res:
             res = {
                 f"score_{mth.name}": res[0],
@@ -82,8 +83,8 @@ def decouple(
             all_res = all_res | res
     if all_res:
         if cons:
-            all_res["score_consensus"], all_res["padj_consensus"] = consensus(all_res, verbose=kwargs["verbose"])
+            all_res["score_consensus"], all_res["padj_consensus"] = consensus(all_res, verbose=kwargs["verbose"],pvalue=pvalue)
         return all_res
     elif cons:
-        consensus(data, verbose=kwargs["verbose"])
+        consensus(data, verbose=kwargs["verbose"],pvalue=pvalue)
     return None

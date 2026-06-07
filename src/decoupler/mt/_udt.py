@@ -30,6 +30,7 @@ def _func_udt(
     mat: np.ndarray,
     adj: np.ndarray,
     verbose: bool = False,
+    pvalue: bool = False,
     **kwargs,
 ) -> tuple[np.ndarray, None]:
     """

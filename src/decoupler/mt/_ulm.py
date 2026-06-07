@@ -26,7 +26,8 @@ def _func_ulm(
     adj: np.ndarray,
     tval: bool = True,
     verbose: bool = False,
-) -> tuple[np.ndarray, np.ndarray]:
+    pvalue: bool = True,
+) -> tuple[np.ndarray, np.ndarray | None]:
     r"""
     Univariate Linear Model (ULM) :cite:`decoupler`.
 
@@ -101,14 +102,19 @@ def _func_ulm(
     r = _cor(adj, mat.T)
     # Compute t-value
     t = _tval(r, df)
-    # Compute p-value
-    pv = sts.t.sf(abs(t), df) * 2
+
     if tval:
         es = t
     else:
         # Compute coef
         es = r * (np.std(mat.T, ddof=1, axis=0).reshape(-1, 1) / np.std(adj, ddof=1, axis=0))
+    if pvalue:
+        # Compute p-value
+        pv = sts.t.sf(abs(t), df) * 2   
+    else:
+        pv = None
     return es, pv
+
 
 
 _ulm = MethodMeta(

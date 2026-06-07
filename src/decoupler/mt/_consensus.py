@@ -62,7 +62,8 @@ def _mean_zscores(
 def consensus(
     result: dict | AnnData,
     verbose: bool = False,
-) -> tuple[pd.DataFrame, pd.DataFrame] | None:
+    pvalue: bool = True,
+) -> tuple[pd.DataFrame, pd.DataFrame | None] | None:
     r"""
     Consensus score across methods.
 
@@ -136,11 +137,15 @@ def consensus(
     scores = np.array(scores)
     # Compute mean z-scores
     es = _mean_zscores(scores)
-    # Compute p-vals
-    pv = 2 * sts.norm.sf(np.abs(es))
-    # FDR
-    pv = sts.false_discovery_control(pv, axis=1, method="bh")
+
     # Transform to df
     es = pd.DataFrame(es, columns=var_names, index=obs_names)
-    pv = pd.DataFrame(pv, columns=var_names, index=obs_names)
+    if pvalue:
+        # Compute p-vals
+        pv = 2 * sts.norm.sf(np.abs(es))
+        # FDR
+        pv = sts.false_discovery_control(pv, axis=1, method="bh")
+        pv = pd.DataFrame(pv, columns=var_names, index=obs_names)
+    else:
+        pv = None
     return _return(name="consensus", data=result, es=es, pv=pv, verbose=False)

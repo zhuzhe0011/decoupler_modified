@@ -111,9 +111,10 @@ def _test1t(
     b: int,
     c: int,
     d: int,
+    pvalue: bool = True
 ) -> float:
     # https://github.com/painyeph/FishersExactTest/blob/master/fisher.py
-    return math.exp(-_mlnTest2t(a, a + b, a + c, a + b + c + d))
+    return math.exp(-_mlnTest2t(a, a + b, a + c, a + b + c + d)) if pvalue else 1.0
 
 
 @nb.njit(cache=True)
@@ -145,11 +146,12 @@ def _runora(
     offsets: np.ndarray,
     n_bg: int | None,
     ha_corr: int | float = 0.5,
+    pvalue: bool = True,
 ) -> tuple[float, float]:
     nsrc = starts.size
     # Transform to set
     es = np.zeros(nsrc)
-    pv = np.zeros(nsrc)
+    pv = np.ones(nsrc)
     for j in nb.prange(nsrc):
         # Extract feature set
         fset = _getset(cnct=cnct, starts=starts, offsets=offsets, j=j)
@@ -168,7 +170,7 @@ def _runora(
         else:
             d = n_bg - a - b - c
         es[j] = _oddsr(a=a, b=b, c=c, d=d, ha_corr=ha_corr, log=True)
-        pv[j] = _test1t(a=a, b=b, c=c, d=d)
+        pv[j] = _test1t(a=a, b=b, c=c, d=d,pvalue=pvalue) 
     return es, pv
 
 
@@ -183,7 +185,8 @@ def _func_ora(
     n_bg: int | float | None = 20_000,
     ha_corr: int | float = 0.5,
     verbose: bool = False,
-) -> tuple[np.ndarray, np.ndarray]:
+    pvalue: bool = True,
+) -> tuple[np.ndarray, np.ndarray | None]:
     r"""
     Over Representation Analysis (ORA) :cite:`ora`.
 
@@ -264,7 +267,7 @@ def _func_ora(
     m = f"ora - calculating {nsrc} scores across {nobs} observations with n_up={n_up}, n_bm={n_bm}, n_bg={n_bg}"
     _log(m, level="info", verbose=verbose)
     es = np.zeros((nobs, nsrc))
-    pv = np.zeros((nobs, nsrc))
+    pv = np.ones((nobs, nsrc))
     ranks = np.arange(nvar, dtype=np.int_)
     for i in tqdm(range(nobs), disable=not verbose):
         if isinstance(mat, sps.csr_matrix):
@@ -275,8 +278,10 @@ def _func_ora(
         row = sts.rankdata(row, method="ordinal")
         row = ranks[(row > n_up) | (row < n_bm)]
         es[i], pv[i] = _runora(
-            row=set(row), ranks=set(ranks), cnct=cnct, starts=starts, offsets=offsets, n_bg=n_bg, ha_corr=ha_corr
+            row=set(row), ranks=set(ranks), cnct=cnct, starts=starts, offsets=offsets, n_bg=n_bg, ha_corr=ha_corr,pvalue=pvalue
         )
+    if not pvalue:
+        pv = None
     return es, pv
 
 
